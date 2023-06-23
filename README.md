@@ -6,16 +6,22 @@ A Camera that can take pics and capture frames.
 ![](for_readme/3201687514247_.pic.jpg)
 
 ## Requirements
-- Install opencv
+- Install opencv 
+
 `brew install opencv`
 ## Usage
-- Clone this repository
-`git clone https://github.com/BinciLuo/RustWebCam.git`
+- Clone this repository 
+
+`git clone https://github.com/BinciLuo/RustWebCam.git` 
+
 `cd RustWebCam`
-- Build
+- Build 
+
 `cargo build`
-- Run
-`cargo run`
+- Run 
+
+`cargo run` 
+
 It wiil create folders `pics`,`pics/Camera`,`pic/Capture` if they don't exist.
 
 ## Classes and Methods Implemented
