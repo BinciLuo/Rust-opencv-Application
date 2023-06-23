@@ -8,20 +8,27 @@ A Camera that can take pics and capture frames.
 ## Requirements
 - Install opencv 
 
-`brew install opencv`
+Macos: 
+`brew install opencv` 
+
+Linux: 
+1. Download opencv-4.x.x source code in https://opencv.org/releases/
+2. unzip it to anywhere you want
+3. `cd opencv-4.x.x`
+4. `mkdir build && cd build`
+5. `cmake -D WITH_TBB=ON -D WITH_EIGEN=ON -D OPENCV_GENERATE_PKGCONFIG=ON  -D BUILD_DOCS=ON -D BUILD_TESTS=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_EXAMPLES=OFF  -D WITH_OPENCL=OFF -D WITH_CUDA=OFF -D BUILD_opencv_gpu=OFF -D BUILD_opencv_gpuarithm=OFF -D BUILD_opencv_gpubgsegm=O -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local ..`
+6. `make -j8`
+7. `make install`
+8. `sudo -i vim /etc/ld.so.conf.d/opencv.conf` and then add `/usr/local/lib` in it
+9. `echo 'PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/local/lib/pkgconfig' >> /etc/bash.bashrc && echo 'export PKG_CONFIG_PATH' >> /etc/bash.bashrc`
 ## Usage
 - Clone this repository 
-
 `git clone https://github.com/BinciLuo/RustWebCam.git` 
-
 `cd RustWebCam`
 - Build 
-
 `cargo build`
 - Run 
-
 `cargo run` 
-
 It wiil create folders `pics`,`pics/Camera`,`pic/Capture` if they don't exist.
 
 ## Classes and Methods Implemented
