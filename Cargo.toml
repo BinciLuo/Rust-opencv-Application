@@ -1,0 +1,13 @@
+[package]
+name = "web_camera"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+reqwest = { version = "0.11.11", features = ["json", "cookies"] }
+tokio = { version = "1", features = ["full"] }
+opencv = "0.63.0" # or whatever version is the latest
+anyhow = { version = "1.0", default-features = false }
+chrono = "0.4"
