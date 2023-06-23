@@ -5,6 +5,7 @@ A Camera that can take pics and capture frames.
 ![](for_readme/2023-06-23%5B17%3A56%3A24%5D.jpeg)
 ![](for_readme/3201687514247_.pic.jpg)
 
+<span id="Requirements"></span>
 ## Requirements
 - Install opencv 
 
@@ -61,3 +62,20 @@ pub fn show_frame(frame:&Mat)->Result<(),opencv::Error>{
 pub fn save_mat_as_image(mat: &Mat, file_path: &str) {
     }
 ```
+
+## TroubleShooting
+### Macos
+Temporarily None
+### Linux
+#### `openssl`
+Message: `failed to run custom build command for openssl-sys v0.9.60` 
+Solution: `sudo apt install libssl-dev`
+#### `llvm`
+Message: `Could not execute 'llvm-config' one or more times` 
+Solution: `apt install llvm clang libclang-dev`
+#### `videoio compile error`
+Message: `function or associated item not found in 'VideoCapture'` 
+Solution: OpenCV version too old. first exec `sudo apt-get purge *libopencv* && sudo apt-get autoremove && sudo apt-get autoclean` to uninstall old opencv and then install it again follow tips in [Requirements](#Requirements).
+#### `gtk`
+Message: `Failed to load module acnberra-gtk-module` 
+Solution: `sudo  apt install libcanberra-gtk-moudle`
