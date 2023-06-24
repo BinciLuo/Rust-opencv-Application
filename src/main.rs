@@ -1,18 +1,22 @@
+use std::time::Duration;
+
+use tokio::time;
+
 mod camera;
 mod folder;
 
 fn main() {
-    let mut folder_name = "pics";
-    folder::set_folder(folder_name);
-    folder_name = "pics/Camera";
-    folder::set_folder(folder_name);
-    folder_name = "pics/Capture";
-    folder::set_folder(folder_name);
+    let folder_names=vec!["pics","pics/Camera","pics/Capture","pics/Person_detection","pics/Face_detection"];
+    for folder_name in folder_names{
+        folder::set_folder(folder_name);
+    }
 
 
     let mut my_camera=camera::Camera::new();
-    my_camera.camera().unwrap();
-    my_camera.capture_frame().unwrap();
+    my_camera.face_detection();
+    my_camera.body_detection();
+    my_camera.camera();
+    my_camera.capture_frame();
 }
 
 

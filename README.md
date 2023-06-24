@@ -75,7 +75,7 @@ Message: `Could not execute 'llvm-config' one or more times`
 Solution: `apt install llvm clang libclang-dev`
 #### `videoio compile error`
 Message: `function or associated item not found in 'VideoCapture'` 
-Solution: OpenCV version too old. first exec `sudo apt-get purge *libopencv* && sudo apt-get autoremove && sudo apt-get autoclean` to uninstall old opencv and then install it again follow tips in [Requirements](#Requirements).
+Solution: OpenCV version too old. first exec `sudo apt-get purge *libopencv* && sudo apt-get autoremove && sudo apt-get autoclean` to uninstall old opencv and then install it again following tips in [Requirements](#Requirements).
 #### `gtk`
 Message: `Failed to load module acnberra-gtk-module` 
 Solution: `sudo  apt install libcanberra-gtk-moudle`
