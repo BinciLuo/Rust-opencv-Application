@@ -8,6 +8,8 @@ use opencv::core::Mat;
 use opencv::core::Vector;
 use opencv::imgcodecs::{self, ImwriteFlags};
 use chrono::Local;
+mod detect;
+
 
 pub struct Camera{
     cam:videoio::VideoCapture,
@@ -48,7 +50,7 @@ impl Camera{
                 continue;
             }
         }
-        highgui::destroy_all_windows();
+        highgui::destroy_all_windows()?;
         Ok(())
     }
 
@@ -75,25 +77,78 @@ impl Camera{
             }
         }
     }
-}
 
-pub fn get_frame() -> Result<Mat,opencv::Error> {
-    highgui::named_window("window", highgui::WINDOW_FULLSCREEN)?;
-    let mut cam = videoio::VideoCapture::new(0, videoio::CAP_ANY)?;
-    let mut frame = Mat::default();
-    cam.read(&mut frame)?;
+    pub fn body_detection(&mut self)->Result<(),opencv::Error>{
+        highgui::named_window("Body Detection Tips:Press[(p, Take picture), (s, Save), (q, quit)]", highgui::WINDOW_FULLSCREEN)?;
+        let mut frame: Mat = Mat::default();
+        let mut saving=false;
+        loop {
+            if !saving{
+                self.cam.read(&mut frame)?;
 
-    Ok(frame)
-}
+                detect::hog_body_detector(&mut frame)?;
+            }
 
-pub fn show_frame(frame:&Mat)->Result<(),opencv::Error>{
-    highgui::named_window("window", highgui::WINDOW_FULLSCREEN)?;
-    highgui::imshow("window", frame)?;
-    let key = highgui::wait_key(50000)?;
-    if key == 113 {//q
-        return Ok(());
+            highgui::imshow("Body Detection Tips:Press[(p, Take picture), (s, Save), (q, quit)]", &frame)?;
+
+            let mut key=highgui::wait_key(1)?;
+            if saving{
+                key = highgui::wait_key(500000)?;
+            }
+
+            if saving && key == 115{//s
+                save_mat_as_image(&frame,"pics/Camera");
+                saving=false;
+                continue;
+            }
+            saving=false;
+            if key == 113 {//q
+                break;
+            }else if key == 112 {//p
+                //save_mat_as_image(&frame,"pics/Camera");
+                saving=true;
+                continue;
+            }
+        }
+        highgui::destroy_all_windows()?;
+        Ok(())
     }
-    Ok(())
+
+    pub fn face_detection(&mut self)->Result<(),opencv::Error>{
+        highgui::named_window("Face Detection Tips:Press[(p, Take picture), (s, Save), (q, quit)]", highgui::WINDOW_FULLSCREEN)?;
+        let mut frame: Mat = Mat::default();
+        let mut saving=false;
+        loop {
+            if !saving{
+                self.cam.read(&mut frame)?;
+
+                detect::haar_face_detector(&mut frame)?;
+            }
+
+            highgui::imshow("Face Detection Tips:Press[(p, Take picture), (s, Save), (q, quit)]", &frame)?;
+
+            let mut key=highgui::wait_key(1)?;
+            if saving{
+                key = highgui::wait_key(500000)?;
+            }
+
+            if saving && key == 115{//s
+                save_mat_as_image(&frame,"pics/Camera");
+                saving=false;
+                continue;
+            }
+            saving=false;
+            if key == 113 {//q
+                break;
+            }else if key == 112 {//p
+                //save_mat_as_image(&frame,"pics/Camera");
+                saving=true;
+                continue;
+            }
+        }
+        highgui::destroy_all_windows()?;
+        Ok(())
+    }
 }
 
 pub fn save_mat_as_image(mat: &Mat, file_path: &str) {
@@ -109,3 +164,22 @@ pub fn save_mat_as_image(mat: &Mat, file_path: &str) {
     )
     .expect("Failed to save image");
 }
+
+// pub fn get_frame() -> Result<Mat,opencv::Error> {
+//     highgui::named_window("window", highgui::WINDOW_FULLSCREEN)?;
+//     let mut cam = videoio::VideoCapture::new(0, videoio::CAP_ANY)?;
+//     let mut frame = Mat::default();
+//     cam.read(&mut frame)?;
+
+//     Ok(frame)
+// }
+
+// pub fn show_frame(frame:&Mat)->Result<(),opencv::Error>{
+//     highgui::named_window("window", highgui::WINDOW_FULLSCREEN)?;
+//     highgui::imshow("window", frame)?;
+//     let key = highgui::wait_key(50000)?;
+//     if key == 113 {//q
+//         return Ok(());
+//     }
+//     Ok(())
+// }
