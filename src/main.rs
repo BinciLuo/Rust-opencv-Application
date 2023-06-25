@@ -11,8 +11,10 @@ fn main() {
         folder::set_folder(folder_name);
     }
 
-
-    let mut my_camera=camera::Camera::new();
+    let mut my_camera=camera::Camera::new(true,"328_1687706104.mp4");
+    my_camera.moving_object_detection();
+    let mut my_camera=camera::Camera::new(false,"328_1687706104.mp4");
+    my_camera.moving_object_detection();
     my_camera.face_detection();
     my_camera.body_detection();
     my_camera.camera();
