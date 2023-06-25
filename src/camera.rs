@@ -9,6 +9,8 @@ use opencv::core::Vector;
 use opencv::imgcodecs::{self, ImwriteFlags};
 use chrono::Local;
 mod detect;
+use std::thread;
+use std::time::Duration;
 
 
 pub struct Camera{
@@ -16,7 +18,12 @@ pub struct Camera{
 }
 
 impl Camera{
-    pub fn new()->Self{
+    pub fn new(from_vedio:bool,path:&str)->Self{
+        if from_vedio{
+            return  Self{
+                cam:videoio::VideoCapture::from_file(path,videoio::CAP_FFMPEG).unwrap()
+            };
+        }
         Self { cam: videoio::VideoCapture::new(0, videoio::CAP_ANY).unwrap()}
 
     }
@@ -134,6 +141,43 @@ impl Camera{
 
             if saving && key == 115{//s
                 save_mat_as_image(&frame,"pics/Camera");
+                saving=false;
+                continue;
+            }
+            saving=false;
+            if key == 113 {//q
+                break;
+            }else if key == 112 {//p
+                //save_mat_as_image(&frame,"pics/Camera");
+                saving=true;
+                continue;
+            }
+        }
+        highgui::destroy_all_windows()?;
+        Ok(())
+    }
+
+    pub fn moving_object_detection(&mut self)->Result<(),opencv::Error>{
+        highgui::named_window("Face Detection Tips:Press[(p, Take picture), (s, Save), (q, quit)]", highgui::WINDOW_FULLSCREEN)?;
+        let mut frame_prev: Mat = Mat::default();
+        let mut frame_next: Mat = Mat::default();
+        let mut saving=false;
+        loop {
+            if !saving{
+                self.cam.read(&mut frame_prev)?;
+                self.cam.read(&mut frame_next)?;
+                detect::moving_object_detector(&mut frame_prev,&mut frame_next)?;
+            }
+
+            highgui::imshow("Moving Object Detection Tips:Press[(p, Take picture), (s, Save), (q, quit)]", &frame_next)?;
+
+            let mut key=highgui::wait_key(1)?;
+            if saving{
+                key = highgui::wait_key(500000)?;
+            }
+
+            if saving && key == 115{//s
+                save_mat_as_image(&frame_next,"pics/Camera");
                 saving=false;
                 continue;
             }
