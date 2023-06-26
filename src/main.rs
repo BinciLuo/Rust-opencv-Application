@@ -10,10 +10,10 @@ fn main() ->Result<(),opencv::Error>{
     }
     
     // Use Camera
-    let mut my_camera=camera::Camera::new(true,"328_1687706104.mp4");
-    my_camera.moving_object_detection(3,20)?;
-    let mut my_camera=camera::Camera::new(false,"");
-    my_camera.moving_object_detection(6,60)?;
+    let mut my_camera = camera::Camera::new(true, "328_1687706104.mp4");
+    my_camera.moving_object_detection(3, 20)?;
+    let mut my_camera = camera::Camera::new(false, "");
+    my_camera.moving_object_detection(6, 60)?;
     // my_camera.face_detection();
     // my_camera.body_detection();
     // my_camera.camera();
