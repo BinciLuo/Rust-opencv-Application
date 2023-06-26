@@ -1,16 +1,14 @@
+mod detect;
+mod tools;
+
+use tools::save_mat_as_image;
 use opencv::{
     prelude::*,
     videoio,
     highgui,
+    core::Mat,
 };
 
-use opencv::core::Mat;
-use opencv::core::Vector;
-use opencv::imgcodecs::{self, ImwriteFlags};
-use chrono::Local;
-mod detect;
-use std::thread;
-use std::time::Duration;
 
 
 pub struct Camera{
@@ -158,18 +156,22 @@ impl Camera{
     }
 
     pub fn moving_object_detection(&mut self,mini: i32,max: i32)->Result<(),opencv::Error>{
+        //init
         highgui::named_window("Face Detection Tips:Press[(p, Take picture), (s, Save), (q, quit)]", highgui::WINDOW_FULLSCREEN)?;
         let mut frame_prev: Mat = Mat::default();
         let mut frame_next: Mat = Mat::default();
+        let mut frame_show: Mat = Mat::default();
         let mut saving=false;
+        self.cam.read(&mut frame_next)?;
+        //detect
         loop {
             if !saving{
-                self.cam.read(&mut frame_prev)?;
+                frame_prev.clone_from(&frame_next);
                 self.cam.read(&mut frame_next)?;
-                detect::moving_object_detector(&mut frame_prev,&mut frame_next,mini,max)?;
+                frame_show=detect::moving_object_detector(&mut frame_prev,&mut frame_next,mini,max)?;
             }
 
-            highgui::imshow("Moving Object Detection Tips:Press[(p, Take picture), (s, Save), (q, quit)]", &frame_next)?;
+            highgui::imshow("Moving Object Detection Tips:Press[(p, Take picture), (s, Save), (q, quit)]", &frame_show)?;
 
             let mut key=highgui::wait_key(1)?;
             if saving{
@@ -177,7 +179,7 @@ impl Camera{
             }
 
             if saving && key == 115{//s
-                save_mat_as_image(&frame_next,"pics/Camera");
+                save_mat_as_image(&frame_show,"pics/Camera");
                 saving=false;
                 continue;
             }
@@ -195,19 +197,7 @@ impl Camera{
     }
 }
 
-pub fn save_mat_as_image(mat: &Mat, file_path: &str) {
-    let current_time = Local::now();
-    let time_string = current_time.format("%Y-%m-%d[%H:%M:%S]").to_string();
-    let mut params=Vector::<i32>::new();
-    params.push(ImwriteFlags::IMWRITE_JPEG_QUALITY as i32);
-    params.push(100);
-    imgcodecs::imwrite(
-        format!("{}/{}.jpeg",file_path,time_string).as_str(),
-        mat,
-        &params
-    )
-    .expect("Failed to save image");
-}
+
 
 // pub fn get_frame() -> Result<Mat,opencv::Error> {
 //     highgui::named_window("window", highgui::WINDOW_FULLSCREEN)?;
