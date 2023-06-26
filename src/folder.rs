@@ -1,5 +1,6 @@
 use std::fs;
 
+
 pub fn folder_exists(folder_name: &str) -> bool {
     fs::metadata(folder_name)
         .map(|metadata| metadata.is_dir())
