@@ -1,11 +1,12 @@
-# Rust Web Camera Powered by opencv
+# Rust Stream and Frame Processing  Powered by opencv
 中文版在[这里](#Chinese)
 ## Introduction
-A Camera that can detect body, face and take photo. 
+A tool that can detect body, face and take photo. The stream or frame sources from video, camera or pictures. 
 `TODO`:
 - [x] Body Detection
 - [x] Face Detection
-- [ ] Moving Object Detection
+- [x] Moving Object Detection
+- [ ] Support for single frame
 ## Preview 
 ![](for_readme/2023-06-25[01:04:38].jpeg)
 ![](for_readme/2023-06-25[01:12:06].jpeg)
@@ -39,15 +40,18 @@ Linux:
 It wiil create folders `pics`,`pics/Camera`,`pic/Capture` if they don't exist.
 
 ## Classes and Methods Implemented
-Most important parts are in `src/camera.rs`.
+Most important parts are in `src/stream`.
 ```Rust
-// Camera Defination
-pub struct Camera{
-    cam:videoio::VideoCapture,
+pub struct Stream{
+    stream_frames: videoio::VideoCapture,
+    stream_source: i32,
 }
 
-impl Camera{
-    pub fn new()->Self{
+impl Stream{
+    pub fn from_video(path:&str) -> Self{
+    }
+
+    pub fn from_camera() -> Self{
     }
 
     pub fn camera(&mut self) -> Result<(),opencv::Error> {
@@ -55,16 +59,18 @@ impl Camera{
 
     pub fn capture_frame(&mut self)->Result<(),opencv::Error>{
     }
+
+    pub fn body_detection(&mut self)->Result<(),opencv::Error>{
+    }
+
+    pub fn face_detection(&mut self)->Result<(),opencv::Error>{
+    }
+
+    pub fn moving_object_detection(&mut self,mini: i32,max: i32, fps: i32)->Result<(),opencv::Error>{
+    }
 }
 
-// If you want to get one frame
-pub fn get_frame() -> Result<Mat,opencv::Error> {
-}
-
-pub fn show_frame(frame:&Mat)->Result<(),opencv::Error>{
-}
-
-// If you want to save a Mat to jepg (It will be stored in {file_path}/{"%Y-%m-%d[%H:%M:%S]"}.jpeg)
+// If you want to save a Mat to jepg (It will be stored in {file_path}/{"%Y-%m-%d[%H:%M:%S]"}.jpeg). It is in stream::tools .
 pub fn save_mat_as_image(mat: &Mat, file_path: &str) {
     }
 ```
@@ -74,17 +80,17 @@ pub fn save_mat_as_image(mat: &Mat, file_path: &str) {
 Temporarily None
 ### Linux
 #### `openssl`
-Message: `failed to run custom build command for openssl-sys v0.9.60` 
-Solution: `sudo apt install libssl-dev`
+- Message: `failed to run custom build command for openssl-sys v0.9.60` 
+- Solution: `sudo apt install libssl-dev`
 #### `llvm`
-Message: `Could not execute 'llvm-config' one or more times` 
-Solution: `apt install llvm clang libclang-dev`
+- Message: `Could not execute 'llvm-config' one or more times` 
+- Solution: `apt install llvm clang libclang-dev`
 #### `videoio compile error`
-Message: `function or associated item not found in 'VideoCapture'` 
-Solution: OpenCV version too old. first exec `sudo apt-get purge *libopencv* && sudo apt-get autoremove && sudo apt-get autoclean` to uninstall old opencv and then install it again following tips in [Requirements](#Requirements).
+- Message: `function or associated item not found in 'VideoCapture'` 
+- Solution: OpenCV version too old. first exec `sudo apt-get purge *libopencv* && sudo apt-get autoremove && sudo apt-get autoclean` to uninstall old opencv and then install it again following tips in [Requirements](#Requirements).
 #### `gtk`
-Message: `Failed to load module acnberra-gtk-module` 
-Solution: `sudo  apt install libcanberra-gtk-moudle`
+- Message: `Failed to load module acnberra-gtk-module` 
+- Solution: `sudo  apt install libcanberra-gtk-moudle`
  
  
 
@@ -92,13 +98,14 @@ Solution: `sudo  apt install libcanberra-gtk-moudle`
 
 
 <span id="Chinese"></span>
-# 由opencv驱动的Rust网络摄像头
+# 由opencv驱动的Rust对视频流和帧的处理工具
 ## 简介
 一款可以检测身体、面部并拍照的摄像头。
 `待办`:
 - [x] 身体检测
 - [x] 面部检测
-- [ ] 移动物体检测
+- [x] 移动物体检测
+- [ ] 对帧的支持
 ## 预览 
 ![](for_readme/2023-06-25[01:04:38].jpeg)
 ![](for_readme/2023-06-25[01:12:06].jpeg)
@@ -132,15 +139,18 @@ Linux:
 如果它们不存在，将创建文件夹`pics`,`pics/Camera`,`pic/Capture`。
 
 ## 实现的类和方法
-最重要的部分在`src/camera.rs`中。
+最重要的部分在 `src/stream` 中.
 ```Rust
-// Camera 定义
-pub struct Camera{
-    cam:videoio::VideoCapture,
+pub struct Stream{
+    stream_frames: videoio::VideoCapture,
+    stream_source: i32,
 }
 
-impl Camera{
-    pub fn new()->Self{
+impl Stream{
+    pub fn from_video(path:&str) -> Self{
+    }
+
+    pub fn from_camera() -> Self{
     }
 
     pub fn camera(&mut self) -> Result<(),opencv::Error> {
@@ -148,16 +158,18 @@ impl Camera{
 
     pub fn capture_frame(&mut self)->Result<(),opencv::Error>{
     }
+
+    pub fn body_detection(&mut self)->Result<(),opencv::Error>{
+    }
+
+    pub fn face_detection(&mut self)->Result<(),opencv::Error>{
+    }
+
+    pub fn moving_object_detection(&mut self,mini: i32,max: i32, fps: i32)->Result<(),opencv::Error>{
+    }
 }
 
-// 如果你想获取一帧
-pub fn get_frame() -> Result<Mat,opencv::Error> {
-}
-
-pub fn show_frame(frame:&Mat)->Result<(),opencv::Error>{
-}
-
-// 如果你想把 Mat 保存为 jpeg （它将会被保存在 {file_path}/{"%Y-%m-%d[%H:%M:%S]"}.jpeg）
+// If you want to save a Mat to jepg (It will be stored in {file_path}/{"%Y-%m-%d[%H:%M:%S]"}.jpeg). It is in stream::tools .
 pub fn save_mat_as_image(mat: &Mat, file_path: &str) {
     }
 ```
@@ -167,16 +179,14 @@ pub fn save_mat_as_image(mat: &Mat, file_path: &str) {
 暂无
 ### Linux
 #### `openssl`
-信息：`failed to run custom build command for openssl-sys
-
- v0.9.60` 
-解决方案：`sudo apt install libssl-dev`
+- 信息：`failed to run custom build command for openssl-sys v0.9.60` 
+- 解决方案：`sudo apt install libssl-dev`
 #### `llvm`
-信息：`Could not execute 'llvm-config' one or more times` 
-解决方案：`apt install llvm clang libclang-dev`
+- 信息：`Could not execute 'llvm-config' one or more times` 
+- 解决方案：`apt install llvm clang libclang-dev`
 #### `videoio compile error`
-信息：`function or associated item not found in 'VideoCapture'` 
-解决方案：OpenCV版本太旧。首先执行`sudo apt-get purge *libopencv* && sudo apt-get autoremove && sudo apt-get autoclean`卸载旧的opencv，然后按照[需求](#需求)中的提示重新安装。
+- 信息：`function or associated item not found in 'VideoCapture'` 
+- 解决方案：OpenCV版本太旧。首先执行`sudo apt-get purge *libopencv* && sudo apt-get autoremove && sudo apt-get autoclean`卸载旧的opencv，然后按照[需求](#需求)中的提示重新安装。
 #### `gtk`
-信息：`Failed to load module acnberra-gtk-module` 
-解决方案：`sudo  apt install libcanberra-gtk-moudle`
+- 信息：`Failed to load module acnberra-gtk-module` 
+- 解决方案：`sudo  apt install libcanberra-gtk-moudle`
