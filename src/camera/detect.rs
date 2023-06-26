@@ -32,7 +32,7 @@ pub fn haar_face_detector(frame:&mut Mat) -> Result<(), opencv::Error>{
     Ok(())
 }
 
-pub fn moving_object_detector(frame_prev:&mut Mat,frame_next:&mut Mat)->Result<(),opencv::Error>{
+pub fn moving_object_detector(frame_prev:&mut Mat,frame_next:&mut Mat,mini: i32,max: i32)->Result<(),opencv::Error>{
     let mut gray_prev=Mat::new_rows_cols_with_default(frame_prev.rows(), frame_prev.cols(), CV_8UC1, Scalar::default())?;
     let mut gray_next=Mat::new_rows_cols_with_default(frame_next.rows(), frame_next.cols(), CV_8UC1, Scalar::default())?;
     let mut diff=Mat::new_rows_cols_with_default(frame_next.rows(), frame_next.cols(), CV_8UC1, Scalar::default())?;
@@ -44,10 +44,10 @@ pub fn moving_object_detector(frame_prev:&mut Mat,frame_next:&mut Mat)->Result<(
     absdiff(&gray_prev,&gray_next,&mut diff2)?;
     threshold(&diff2,&mut diff,25.0,255.0,THRESH_BINARY)?;
 
-    let mut element=get_structuring_element(MORPH_RECT,Size::new(4,4),Point::default())?;
+    let mut element=get_structuring_element(MORPH_RECT,Size::new(mini,mini),Point::default())?;
     erode(&diff,&mut diff2,&element,Point::new(-1,-1), 1,BORDER_CONSTANT,Scalar::default())?;
 
-    let mut element2=get_structuring_element(MORPH_RECT,Size::new(30,30),Point::default())?;
+    let mut element2=get_structuring_element(MORPH_RECT,Size::new(max,max),Point::default())?;
     dilate(&diff2,&mut diff,&element2,Point::new(-1,-1), 1,BORDER_CONSTANT,Scalar::default())?;
 
     let mut contours:Vector<Vector<Point>>=Vector::new();
