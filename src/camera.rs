@@ -157,7 +157,7 @@ impl Camera{
         Ok(())
     }
 
-    pub fn moving_object_detection(&mut self)->Result<(),opencv::Error>{
+    pub fn moving_object_detection(&mut self,mini: i32,max: i32)->Result<(),opencv::Error>{
         highgui::named_window("Face Detection Tips:Press[(p, Take picture), (s, Save), (q, quit)]", highgui::WINDOW_FULLSCREEN)?;
         let mut frame_prev: Mat = Mat::default();
         let mut frame_next: Mat = Mat::default();
@@ -166,7 +166,7 @@ impl Camera{
             if !saving{
                 self.cam.read(&mut frame_prev)?;
                 self.cam.read(&mut frame_next)?;
-                detect::moving_object_detector(&mut frame_prev,&mut frame_next)?;
+                detect::moving_object_detector(&mut frame_prev,&mut frame_next,mini,max)?;
             }
 
             highgui::imshow("Moving Object Detection Tips:Press[(p, Take picture), (s, Save), (q, quit)]", &frame_next)?;
