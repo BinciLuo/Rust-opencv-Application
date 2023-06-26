@@ -90,7 +90,6 @@ impl Camera{
         loop {
             if !saving{
                 self.cam.read(&mut frame)?;
-
                 detect::hog_body_detector(&mut frame)?;
             }
 
@@ -126,7 +125,6 @@ impl Camera{
         loop {
             if !saving{
                 self.cam.read(&mut frame)?;
-
                 detect::haar_face_detector(&mut frame)?;
             }
 
@@ -168,7 +166,10 @@ impl Camera{
             if !saving{
                 frame_prev.clone_from(&frame_next);
                 self.cam.read(&mut frame_next)?;
-                frame_show=detect::moving_object_detector(&mut frame_prev,&mut frame_next,mini,max)?;
+                frame_show=detect::moving_object_detector(&mut frame_prev,
+                    &mut frame_next,
+                    mini,
+                    max)?;
             }
 
             highgui::imshow("Moving Object Detection Tips:Press[(p, Take picture), (s, Save), (q, quit)]", &frame_show)?;
