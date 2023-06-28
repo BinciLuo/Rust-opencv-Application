@@ -229,3 +229,9 @@ impl Stream{
 
 
 
+trait FrameProcess {
+    fn body_detection(&mut self) -> Result<(),opencv::Error>;
+    fn face_detection(&mut self) -> Result<(),opencv::Error>;
+}
+
+type Frame=Mat;
