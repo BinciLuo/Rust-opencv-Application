@@ -9,10 +9,15 @@ use opencv::{
     core::Mat,
 };
 
+// TODO: Change this to enum
 pub const VEDIO: i32 = 0;
 pub const CAMERA: i32 = 1;
 
+/*
+    Stream
 
+    Here is defination and impl for Stream
+*/
 pub struct Stream{
     stream_frames: videoio::VideoCapture,
     stream_source: i32,
@@ -97,7 +102,7 @@ impl Stream{
         loop {
             if !saving{
                 self.stream_frames.read(&mut frame)?;
-                detect::hog_body_detector(&mut frame)?;
+                frame.body_detection()?;
             }
 
             highgui::imshow("Body Detection Tips:Press[(p, Take picture), (s, Save), (q, quit)]", &frame)?;
@@ -132,7 +137,7 @@ impl Stream{
         loop {
             if !saving{
                 self.stream_frames.read(&mut frame)?;
-                detect::haar_face_detector(&mut frame)?;
+                frame.face_detection()?;
             }
 
             highgui::imshow("Face Detection Tips:Press[(p, Take picture), (s, Save), (q, quit)]", &frame)?;
@@ -228,10 +233,17 @@ impl Stream{
 
 
 
+/*
+    Frame
+
+    Here is defination and impl for Frame
+*/
+type Frame=Mat;
 
 trait FrameProcess {
     fn body_detection(&mut self) -> Result<(),opencv::Error>;
     fn face_detection(&mut self) -> Result<(),opencv::Error>;
+    fn save_as_image(&self, file_path: &str) -> std::result::Result<(), opencv::Error>;
+    // TODO: fn read_from_img(file_path: &str) -> Result<Frame, opencv::Error>;
+    // TODO: fn moving_object_detection(frame_prev: &Self, frame_next: &Self, mini: i32, max: i32) -> Result<Frame, opencv::Error>;
 }
-
-type Frame=Mat;

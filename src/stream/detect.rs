@@ -1,39 +1,9 @@
 use opencv::{
-    prelude::*, objdetect::{CascadeClassifier, HOGDescriptor}, 
+    prelude::*, 
     core::{CV_8UC1, Scalar, Size, Vector, absdiff, Point, BORDER_CONSTANT}, 
     imgproc::{COLOR_RGB2GRAY, cvt_color, rectangle, LINE_8, THRESH_BINARY, get_structuring_element, MORPH_RECT, erode, threshold, dilate, find_contours, CHAIN_APPROX_SIMPLE, RETR_EXTERNAL, approx_poly_dp, bounding_rect},
     types::VectorOfPoint,
 };
-use crate::stream::Frame;
-use crate::stream::FrameProcess;
-
-
-pub fn hog_body_detector(frame:&mut Mat) -> Result<(), opencv::Error>{
-    let mut hog = HOGDescriptor::default()?;
-    hog.set_svm_detector(&HOGDescriptor::get_default_people_detector()?)?;
-    let mut found_locations = Vector::new();
-    hog.detect_multi_scale(frame, &mut found_locations, 0., Size::default(), Size::default(), 1.05, 2.0, false)?;
-    println!("hog 检测到{}个人体", found_locations.len());
-    for rect in found_locations{
-        rectangle(frame, rect, Scalar::new(255., 0., 0., 255.), 2, LINE_8, 0)?;
-    }
-    Ok(())
-}
-
-pub fn haar_face_detector(frame:&mut Mat) -> Result<(), opencv::Error>{
-    let mut classifier = CascadeClassifier::default()?;
-    classifier.load("haarcascade_frontalface_alt2.xml")?;
-    let mut gray = Mat::new_rows_cols_with_default(frame.rows(), frame.cols(), CV_8UC1, Scalar::default())?;    
-    cvt_color(frame, &mut gray, COLOR_RGB2GRAY, 0)?;
-    let mut faces = Vector::new();
-    classifier.detect_multi_scale(&gray, &mut faces, 1.1, 5, 0, Size::new(3, 3), Size::default())?;
-    
-    println!("haar 检测到{}个人脸", faces.len());
-    for rec in faces{
-        rectangle(frame, rec, Scalar::new(0., 0., 0., 255.), 2, LINE_8, 0)?;
-    }
-    Ok(())
-}
 
 pub fn moving_object_detector(frame_prev:&mut Mat, frame_next:&mut Mat, mini: i32, max: i32) -> Result<Mat, opencv::Error>{
     let mut gray_prev = Mat::new_rows_cols_with_default(frame_prev.rows(), frame_prev.cols(), CV_8UC1, Scalar::default())?;
@@ -65,36 +35,4 @@ pub fn moving_object_detector(frame_prev:&mut Mat, frame_next:&mut Mat, mini: i3
         rectangle(&mut frame_result, bound_rect, Scalar::new(0.0, 255.0, 0.0, 0.0), 2, LINE_8, 0)?;
     }
     Ok(frame_result)
-}
-
-
-impl FrameProcess for Frame{
-
-    fn body_detection(&mut self) -> Result<(), opencv::Error>{
-        let mut hog = HOGDescriptor::default()?;
-        hog.set_svm_detector(&HOGDescriptor::get_default_people_detector()?)?;
-        let mut found_locations = Vector::new();
-        hog.detect_multi_scale(self, &mut found_locations, 0., Size::default(), Size::default(), 1.05, 2.0, false)?;
-        println!("hog 检测到{}个人体", found_locations.len());
-        for rect in found_locations{
-            rectangle(self, rect, Scalar::new(255., 0., 0., 255.), 2, LINE_8, 0)?;
-        }
-        Ok(())
-    }
-
-    fn face_detection(&mut self) -> Result<(), opencv::Error>{
-        let mut classifier = CascadeClassifier::default()?;
-        classifier.load("haarcascade_frontalface_alt2.xml")?;
-        let mut gray = Mat::new_rows_cols_with_default(self.rows(), self.cols(), CV_8UC1, Scalar::default())?;    
-        cvt_color(self, &mut gray, COLOR_RGB2GRAY, 0)?;
-        let mut faces = Vector::new();
-        classifier.detect_multi_scale(&gray, &mut faces, 1.1, 5, 0, Size::new(3, 3), Size::default())?;
-        
-        println!("haar 检测到{}个人脸", faces.len());
-        for rec in faces{
-            rectangle(self, rec, Scalar::new(0., 0., 0., 255.), 2, LINE_8, 0)?;
-        }
-        Ok(())
-    }
-
 }
