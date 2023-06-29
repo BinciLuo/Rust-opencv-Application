@@ -70,7 +70,7 @@ impl FrameProcess for Frame{
         Ok(())
     }
 
-    fn save_as_image(&self, file_path: &str) -> Result<(),opencv::Error>{
+    fn save_as_img(&self, file_path: &str) -> Result<(),opencv::Error>{
         let current_time = Local::now();
         let time_string = current_time.format("%Y-%m-%d[%H:%M:%S]").to_string();
         let mut params=Vector::<i32>::new();
