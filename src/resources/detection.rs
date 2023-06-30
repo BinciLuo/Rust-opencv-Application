@@ -14,7 +14,6 @@ impl FrameDetection for Frame{
         hog.set_svm_detector(&HOGDescriptor::get_default_people_detector()?)?;
         let mut found_locations = Vector::new();
         hog.detect_multi_scale(self, &mut found_locations, 0., Size::default(), Size::default(), 1.05, 2.0, false)?;
-        println!("hog 检测到{}个人体", found_locations.len());
         for rect in found_locations{
             rectangle(self, rect, Scalar::new(255., 0., 0., 255.), 2, LINE_8, 0)?;
         }
@@ -29,15 +28,11 @@ impl FrameDetection for Frame{
         let mut faces = Vector::new();
         classifier.detect_multi_scale(&gray, &mut faces, 1.1, 5, 0, Size::new(3, 3), Size::default())?;
         
-        println!("haar 检测到{}个人脸", faces.len());
         for rec in faces{
             rectangle(self, rec, Scalar::new(0., 0., 0., 255.), 2, LINE_8, 0)?;
         }
         Ok(())
     }
-
-    
-    // TODO: fn read_from_img(file_path: &str) -> Result<Frame, opencv::Error> {}
 
     fn moving_object_detection(frame_prev:&mut Self, frame_next:&mut Self, mini: i32, max: i32) -> Result<Mat, opencv::Error>{
         let mut gray_prev = Mat::new_rows_cols_with_default(frame_prev.rows(), frame_prev.cols(), CV_8UC1, Scalar::default())?;

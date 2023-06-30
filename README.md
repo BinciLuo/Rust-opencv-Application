@@ -6,9 +6,9 @@ A tool that can detect body, face and take photo. The stream or frame sources fr
 - [x] Body Detection
 - [x] Face Detection
 - [x] Moving Object Detection
-- [ ] Support for single frame
+- [x] Support for single frame
 ## Preview 
-![](for_readme/2023-06-25[01:04:38].jpeg)
+![](for_readme/2023-07-01[04:37:31].jpeg)
 ![](for_readme/2023-06-25[01:12:06].jpeg)
 ![](for_readme/2023-06-25[01:13:19].jpeg)
 
@@ -105,9 +105,9 @@ Temporarily None
 - [x] 身体检测
 - [x] 面部检测
 - [x] 移动物体检测
-- [ ] 对帧的支持
+- [x] 对帧的支持
 ## 预览 
-![](for_readme/2023-06-25[01:04:38].jpeg)
+![](for_readme/2023-07-01[04:37:31].jpeg)
 ![](for_readme/2023-06-25[01:12:06].jpeg)
 ![](for_readme/2023-06-25[01:13:19].jpeg)
 
