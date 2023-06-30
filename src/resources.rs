@@ -24,7 +24,7 @@ impl Stream{
     pub fn from_video(path:&str) -> Self{
         Self{
                 stream_frames:videoio::VideoCapture::from_file(path,videoio::CAP_FFMPEG).unwrap(),
-                stream_source: consts::VEDIO,
+                stream_source: consts::VIDEO,
             }
     }
 
@@ -101,7 +101,7 @@ impl Stream{
         // Some Init
         if output_path == ""{
             set_folder("temp");
-            output_path = "temp/temp_vedio.mp4";
+            output_path = "temp/temp_video.mp4";
         }
         let fourcc = VideoWriter::fourcc('m' as i8, 'p' as i8, '4' as i8, 'v' as i8).unwrap();
         let mut video_writer = VideoWriter::new(output_path, fourcc, fps, frame_size, true).unwrap();
@@ -155,7 +155,7 @@ impl Stream{
         // Some Init
         if output_path == ""{
             set_folder("temp");
-            output_path = "temp/temp_vedio.mp4";
+            output_path = "temp/temp_video.mp4";
         }
         let fourcc = VideoWriter::fourcc('m' as i8, 'p' as i8, '4' as i8, 'v' as i8).unwrap();
         let mut video_writer = VideoWriter::new(output_path, fourcc, fps, frame_size, true).unwrap();
@@ -209,7 +209,7 @@ impl Stream{
         // Some Init
         if output_path == ""{
             set_folder("temp");
-            output_path = "temp/temp_vedio.mp4";
+            output_path = "temp/temp_video.mp4";
         }
         let fourcc = VideoWriter::fourcc('m' as i8, 'p' as i8, '4' as i8, 'v' as i8).unwrap();
         let mut video_writer = VideoWriter::new(output_path, fourcc, fps, frame_size, true).unwrap();

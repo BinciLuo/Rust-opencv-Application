@@ -17,9 +17,9 @@ fn main() ->Result<(),opencv::Error>{
     baoguo_pic.show("Baoguo")?;
     baoguo_pic.save_as_img("for_readme").unwrap();
 
-    // Use Vedio as Stream
+    // Use Video as Stream
     let mut video_stream = resources::Stream::from_video("328_1687706104.mp4");
-    video_stream.moving_object_detection(3, 20, 30, false, "moving_vedio.mp4")?;
+    video_stream.moving_object_detection(3, 20, 30, false, "moving_video.mp4")?;
 
     // // Use Camera as Stream
     // let mut my_camera = resources::Stream::from_camera();
