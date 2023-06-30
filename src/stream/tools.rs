@@ -1,18 +1,41 @@
-use opencv::{
-    core::{Mat, Vector, Scalar, Size, CV_8UC1},
-    imgcodecs::{self, ImwriteFlags,},
-    prelude::{MatTraitConst, CascadeClassifierTrait, HOGDescriptorTraitConst, HOGDescriptorTrait},
-    imgproc::{LINE_8, rectangle, cvt_color, COLOR_RGB2GRAY},
-    objdetect::{CascadeClassifier, HOGDescriptor},
-};
+use std::{time::Instant, thread};
 
 use chrono::Local;
-use std::{
-    time::Instant,
-    thread,
+use opencv::{
+    prelude::*, 
+    core::Vector, 
+    highgui, imgcodecs::{ImwriteFlags, self},
 };
 
-use super::{FrameProcess, Frame};
+use super::{FrameTools, Frame};
+
+impl FrameTools for Frame {
+
+    fn save_as_img(&self, file_path: &str) -> Result<(),opencv::Error>{
+        let current_time = Local::now();
+        let time_string = current_time.format("%Y-%m-%d[%H:%M:%S]").to_string();
+        let mut params=Vector::<i32>::new();
+        params.push(ImwriteFlags::IMWRITE_JPEG_QUALITY as i32);
+        params.push(100);
+        let _ = imgcodecs::imwrite(
+            format!("{}/{}.jpeg",file_path,time_string).as_str(),
+            self,
+            &params
+        );
+        Ok(())
+    }
+
+    fn show(&self,window_name: &str) -> Result<(),opencv::Error>{
+        highgui::named_window(window_name, highgui::WINDOW_FULLSCREEN)?;
+        highgui::imshow("show_frame", self)?;
+        let key = highgui::wait_key(50000)?;
+        if key == 113 {//q
+            return Ok(());
+        }
+        Ok(())
+    }
+
+}
 
 pub struct FPSAdjuster{
     fram_per_seconds:i32,
@@ -41,51 +64,3 @@ impl FPSAdjuster{
         }
     }
 }
-
-impl FrameProcess for Frame{
-    fn body_detection(&mut self) -> Result<(), opencv::Error>{
-        let mut hog = HOGDescriptor::default()?;
-        hog.set_svm_detector(&HOGDescriptor::get_default_people_detector()?)?;
-        let mut found_locations = Vector::new();
-        hog.detect_multi_scale(self, &mut found_locations, 0., Size::default(), Size::default(), 1.05, 2.0, false)?;
-        println!("hog 检测到{}个人体", found_locations.len());
-        for rect in found_locations{
-            rectangle(self, rect, Scalar::new(255., 0., 0., 255.), 2, LINE_8, 0)?;
-        }
-        Ok(())
-    }
-
-    fn face_detection(&mut self) -> Result<(), opencv::Error>{
-        let mut classifier = CascadeClassifier::default()?;
-        classifier.load("haarcascade_frontalface_alt2.xml")?;
-        let mut gray = Mat::new_rows_cols_with_default(self.rows(), self.cols(), CV_8UC1, Scalar::default())?;    
-        cvt_color(self, &mut gray, COLOR_RGB2GRAY, 0)?;
-        let mut faces = Vector::new();
-        classifier.detect_multi_scale(&gray, &mut faces, 1.1, 5, 0, Size::new(3, 3), Size::default())?;
-        
-        println!("haar 检测到{}个人脸", faces.len());
-        for rec in faces{
-            rectangle(self, rec, Scalar::new(0., 0., 0., 255.), 2, LINE_8, 0)?;
-        }
-        Ok(())
-    }
-
-    fn save_as_img(&self, file_path: &str) -> Result<(),opencv::Error>{
-        let current_time = Local::now();
-        let time_string = current_time.format("%Y-%m-%d[%H:%M:%S]").to_string();
-        let mut params=Vector::<i32>::new();
-        params.push(ImwriteFlags::IMWRITE_JPEG_QUALITY as i32);
-        params.push(100);
-        let _ = imgcodecs::imwrite(
-            format!("{}/{}.jpeg",file_path,time_string).as_str(),
-            self,
-            &params
-        );
-        Ok(())
-    }
-
-    // TODO: fn read_from_img(file_path: &str) -> Result<Frame, opencv::Error> {}
-
-    // TODO: fn moving_object_detection(frame_prev: &Self, frame_next: &Self, mini: i32, max: i32) -> Result<Frame, opencv::Error> {}
-}
-

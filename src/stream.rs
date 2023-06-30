@@ -1,5 +1,5 @@
-mod detect;
 mod tools;
+mod detection;
 
 use opencv::{
     prelude::*,
@@ -176,11 +176,13 @@ impl Stream{
                 frame_prev.clone_from(&frame_next);
                 self.stream_frames.read(&mut frame_next)?;
                 fps_adjuster.start();
-                frame_show=detect::moving_object_detector(&mut frame_prev,
-                    &mut frame_next,
-                    mini,
-                    max)?;
+                // frame_show=detect::moving_object_detector(&mut frame_prev,
+                //     &mut frame_next,
+                //     mini,
+                //     max)?;
+                frame_show=Frame::moving_object_detection(&mut frame_prev,&mut frame_next, mini, max)?;
                 fps_adjuster.end();
+                
             }
 
             highgui::imshow("Moving Object Detection Tips:Press[(p, Take picture), (s, Save), (q, quit)]", &frame_show)?;
@@ -191,7 +193,7 @@ impl Stream{
             }
 
             if saving && key == 115{//s
-                frame_show.save_as_img("pics/Camera");
+                frame_show.save_as_img("pics/Camera")?;
                 saving=false;
                 continue;
             }
@@ -214,16 +216,6 @@ impl Stream{
         self.stream_frames.read(&mut frame)?;
         Ok(frame)
     }
-    
-    fn show_frame(frame:&Frame)->Result<(),opencv::Error>{
-        highgui::named_window("show_frame", highgui::WINDOW_FULLSCREEN)?;
-        highgui::imshow("show_frame", frame)?;
-        let key = highgui::wait_key(50000)?;
-        if key == 113 {//q
-            return Ok(());
-        }
-        Ok(())
-    }
 }
 
 
@@ -235,10 +227,16 @@ impl Stream{
 */
 type Frame=Mat;
 
-trait FrameProcess {
+trait FrameDetection {
     fn body_detection(&mut self) -> Result<(),opencv::Error>;
     fn face_detection(&mut self) -> Result<(),opencv::Error>;
+    
+    // TODO: fn read_from_img(file_path: &str) -> Result<Frame, opencv::Error>; 
+    fn moving_object_detection(frame_prev: &mut Self, frame_next: &mut Self, mini: i32, max: i32) -> Result<Frame, opencv::Error>;
+    
+}
+
+trait FrameTools {
     fn save_as_img(&self, file_path: &str) -> std::result::Result<(), opencv::Error>;
-    // TODO: fn read_from_img(file_path: &str) -> Result<Frame, opencv::Error>;
-    // TODO: fn moving_object_detection(frame_prev: &Self, frame_next: &Self, mini: i32, max: i32) -> Result<Frame, opencv::Error>;
+    fn show(&self,window_name: &str) -> Result<(),opencv::Error>;
 }
