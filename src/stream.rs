@@ -1,7 +1,6 @@
-mod detect;
 mod tools;
+mod detection;
 
-use tools::save_mat_as_image;
 use opencv::{
     prelude::*,
     videoio,
@@ -9,10 +8,15 @@ use opencv::{
     core::Mat,
 };
 
+// TODO: Change this to enum
 pub const VEDIO: i32 = 0;
 pub const CAMERA: i32 = 1;
 
+/*
+    Stream
 
+    Here is defination and impl for Stream
+*/
 pub struct Stream{
     stream_frames: videoio::VideoCapture,
     stream_source: i32,
@@ -35,7 +39,7 @@ impl Stream{
 
     pub fn camera(&mut self) -> Result<(),opencv::Error> {
         highgui::named_window("Rust Web Camera Tips:Press[(p, Take picture), (s, Save), (q, quit)]", highgui::WINDOW_FULLSCREEN)?;
-        let mut frame = Mat::default();
+        let mut frame = Frame::default();
         let mut saving=false;
         loop {
             if !saving{
@@ -49,7 +53,7 @@ impl Stream{
             }
 
             if saving && key == 115{//s
-                save_mat_as_image(&frame,"pics/Camera");
+                frame.save_as_img("pics/Camera")?;
                 saving=false;
                 continue;
             }
@@ -57,7 +61,6 @@ impl Stream{
             if key == 113 {//q
                 break;
             }else if key == 112 {//p
-                //save_mat_as_image(&frame,"pics/Camera");
                 saving=true;
                 continue;
             }
@@ -68,7 +71,7 @@ impl Stream{
 
     pub fn capture_frame(&mut self)->Result<(),opencv::Error>{
         highgui::named_window("RustCapture Tips:Press[(s, Save), (q, quit)]", highgui::WINDOW_FULLSCREEN)?;
-        let mut frame = Mat::default();
+        let mut frame = Frame::default();
         let mut saved=false;
         loop{
             if !saved{
@@ -83,7 +86,7 @@ impl Stream{
             }else if key == 114 {//r
                 continue;
             }else if key == 115 {//s
-                save_mat_as_image(&frame,"pics/Capture");
+                frame.save_as_img("pics/Capture")?;
                 saved=true;
                 continue;
             }
@@ -92,12 +95,12 @@ impl Stream{
 
     pub fn body_detection(&mut self)->Result<(),opencv::Error>{
         highgui::named_window("Body Detection Tips:Press[(p, Take picture), (s, Save), (q, quit)]", highgui::WINDOW_FULLSCREEN)?;
-        let mut frame: Mat = Mat::default();
+        let mut frame: Frame = Frame::default();
         let mut saving=false;
         loop {
             if !saving{
                 self.stream_frames.read(&mut frame)?;
-                detect::hog_body_detector(&mut frame)?;
+                frame.body_detection()?;
             }
 
             highgui::imshow("Body Detection Tips:Press[(p, Take picture), (s, Save), (q, quit)]", &frame)?;
@@ -108,7 +111,7 @@ impl Stream{
             }
 
             if saving && key == 115{//s
-                save_mat_as_image(&frame,"pics/Camera");
+                frame.save_as_img("pics/Camera")?;
                 saving=false;
                 continue;
             }
@@ -116,7 +119,6 @@ impl Stream{
             if key == 113 {//q
                 break;
             }else if key == 112 {//p
-                //save_mat_as_image(&frame,"pics/Camera");
                 saving=true;
                 continue;
             }
@@ -127,12 +129,12 @@ impl Stream{
 
     pub fn face_detection(&mut self)->Result<(),opencv::Error>{
         highgui::named_window("Face Detection Tips:Press[(p, Take picture), (s, Save), (q, quit)]", highgui::WINDOW_FULLSCREEN)?;
-        let mut frame: Mat = Mat::default();
+        let mut frame: Frame = Frame::default();
         let mut saving=false;
         loop {
             if !saving{
                 self.stream_frames.read(&mut frame)?;
-                detect::haar_face_detector(&mut frame)?;
+                frame.face_detection()?;
             }
 
             highgui::imshow("Face Detection Tips:Press[(p, Take picture), (s, Save), (q, quit)]", &frame)?;
@@ -143,7 +145,7 @@ impl Stream{
             }
 
             if saving && key == 115{//s
-                save_mat_as_image(&frame,"pics/Camera");
+                frame.save_as_img("pics/Camera")?;
                 saving=false;
                 continue;
             }
@@ -151,7 +153,6 @@ impl Stream{
             if key == 113 {//q
                 break;
             }else if key == 112 {//p
-                //save_mat_as_image(&frame,"pics/Camera");
                 saving=true;
                 continue;
             }
@@ -164,9 +165,9 @@ impl Stream{
         //init
         let mut fps_adjuster = tools::FPSAdjuster::new(fps);
         highgui::named_window("Face Detection Tips:Press[(p, Take picture), (s, Save), (q, quit)]", highgui::WINDOW_FULLSCREEN)?;
-        let mut frame_prev: Mat = Mat::default();
-        let mut frame_next: Mat = Mat::default();
-        let mut frame_show: Mat = Mat::default();
+        let mut frame_prev: Frame = Frame::default();
+        let mut frame_next: Frame = Frame::default();
+        let mut frame_show: Frame = Frame::default();
         let mut saving=false;
         self.stream_frames.read(&mut frame_next)?;
         //detect
@@ -175,11 +176,13 @@ impl Stream{
                 frame_prev.clone_from(&frame_next);
                 self.stream_frames.read(&mut frame_next)?;
                 fps_adjuster.start();
-                frame_show=detect::moving_object_detector(&mut frame_prev,
-                    &mut frame_next,
-                    mini,
-                    max)?;
+                // frame_show=detect::moving_object_detector(&mut frame_prev,
+                //     &mut frame_next,
+                //     mini,
+                //     max)?;
+                frame_show=Frame::moving_object_detection(&mut frame_prev,&mut frame_next, mini, max)?;
                 fps_adjuster.end();
+                
             }
 
             highgui::imshow("Moving Object Detection Tips:Press[(p, Take picture), (s, Save), (q, quit)]", &frame_show)?;
@@ -190,7 +193,7 @@ impl Stream{
             }
 
             if saving && key == 115{//s
-                save_mat_as_image(&frame_show,"pics/Camera");
+                frame_show.save_as_img("pics/Camera")?;
                 saving=false;
                 continue;
             }
@@ -198,7 +201,6 @@ impl Stream{
             if key == 113 {//q
                 break;
             }else if key == 112 {//p
-                //save_mat_as_image(&frame,"pics/Camera");
                 saving=true;
                 continue;
             }
@@ -209,23 +211,32 @@ impl Stream{
 }
 
 impl Stream{
-    pub fn get_frame(&mut self) -> Result<Mat,opencv::Error> {
-        let mut frame = Mat::default();
+    pub fn get_frame(&mut self) -> Result<Frame,opencv::Error> {
+        let mut frame = Frame::default();
         self.stream_frames.read(&mut frame)?;
         Ok(frame)
-    }
-    
-    fn show_frame(frame:&Mat)->Result<(),opencv::Error>{
-        highgui::named_window("show_frame", highgui::WINDOW_FULLSCREEN)?;
-        highgui::imshow("show_frame", frame)?;
-        let key = highgui::wait_key(50000)?;
-        if key == 113 {//q
-            return Ok(());
-        }
-        Ok(())
     }
 }
 
 
 
+/*
+    Frame
 
+    Here is defination and impl for Frame
+*/
+type Frame=Mat;
+
+trait FrameDetection {
+    fn body_detection(&mut self) -> Result<(),opencv::Error>;
+    fn face_detection(&mut self) -> Result<(),opencv::Error>;
+    
+    // TODO: fn read_from_img(file_path: &str) -> Result<Frame, opencv::Error>; 
+    fn moving_object_detection(frame_prev: &mut Self, frame_next: &mut Self, mini: i32, max: i32) -> Result<Frame, opencv::Error>;
+    
+}
+
+trait FrameTools {
+    fn save_as_img(&self, file_path: &str) -> std::result::Result<(), opencv::Error>;
+    fn show(&self,window_name: &str) -> Result<(),opencv::Error>;
+}
