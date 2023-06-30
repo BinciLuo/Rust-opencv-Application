@@ -2,9 +2,10 @@ use std::{time::Instant, thread};
 
 use chrono::Local;
 use opencv::{
-    prelude::*, 
+    // prelude::*, 
     core::Vector, 
     highgui, imgcodecs::{ImwriteFlags, self},
+    imgcodecs::imread,
 };
 
 use super::{FrameTools, Frame};
@@ -17,11 +18,11 @@ impl FrameTools for Frame {
         let mut params=Vector::<i32>::new();
         params.push(ImwriteFlags::IMWRITE_JPEG_QUALITY as i32);
         params.push(100);
-        let _ = imgcodecs::imwrite(
+        imgcodecs::imwrite(
             format!("{}/{}.jpeg",file_path,time_string).as_str(),
             self,
             &params
-        );
+        )?;
         Ok(())
     }
 
@@ -33,6 +34,11 @@ impl FrameTools for Frame {
             return Ok(());
         }
         Ok(())
+    }
+
+    fn get_from_img(file_path: &str) -> Result<Self, opencv::Error>{
+        let frame = imread(file_path, opencv::imgcodecs::IMREAD_COLOR)?;
+        Ok(frame)
     }
 
 }
