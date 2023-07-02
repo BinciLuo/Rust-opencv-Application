@@ -59,7 +59,7 @@ Temporarily None
 - Message: `Failed to load module acnberra-gtk-module` 
 - Solution: `sudo  apt install libcanberra-gtk-moudle`
 #### `'limits' file not found`
-- Message: `'limits file not found'`
+- Message: `'limits' file not found`
 - Soulution `sudo apt install libstdc++-12-dev` 
 
 <span id="Chinese"></span>
@@ -119,12 +119,10 @@ Linux:
 - 解决方法：`sudo apt install llvm clang libclang-dev`
 #### `videoio`编译错误
 - 错误信息：`function or associated item not found in 'VideoCapture'` 
-- 解决方法：OpenCV版本太旧。首先执行 `sudo apt-get purge *libopencv* && sudo apt
-
--get autoremove && sudo apt-get autoclean` 来卸载旧的OpenCV，然后根据[系统要求](#Requirements)中的提示重新安装。
+- 解决方法：OpenCV版本太旧。首先执行 `sudo apt-get purge *libopencv* && sudo apt-get autoremove && sudo apt-get autoclean` 来卸载旧的OpenCV，然后根据[系统要求](#Requirements)中的提示重新安装。
 #### `gtk`
 - 错误信息：`Failed to load module acnberra-gtk-module` 
 - 解决方法：`sudo  apt install libcanberra-gtk-moudle`
 #### `'limits' file not found`
-- 错误信息：`'limits file not found'`
+- 错误信息：`'limits' file not found`
 - 解决方法：`sudo apt install libstdc++-12-dev` 
