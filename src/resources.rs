@@ -288,7 +288,7 @@ pub(crate) trait FrameDetection {
     fn body_detection(&mut self) -> Result<(),opencv::Error>;
     fn face_detection(&mut self) -> Result<(),opencv::Error>;
     fn moving_object_detection(frame_prev: &mut Self, frame_next: &mut Self, mini: i32, max: i32) -> Result<Frame, opencv::Error>;
-    
+    fn qrcode_detection(&mut self) -> Result<String,opencv::Error>;
 }
 
 pub(crate) trait FrameTools {

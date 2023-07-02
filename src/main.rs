@@ -11,15 +11,21 @@ fn main() ->Result<(),opencv::Error>{
         folder::set_folder(folder_name);
     }
 
-    // Use Pics as Frame
-    let mut baoguo_pic = resources::Frame::get_from_img("TeacherBaoguo.jpeg")?;
-    baoguo_pic.face_detection()?;
-    baoguo_pic.show("Baoguo")?;
-    baoguo_pic.save_as_img("for_readme").unwrap();
+    // // Use Pics as Frame
+    // let mut baoguo_pic = resources::Frame::get_from_img("TeacherBaoguo.jpeg")?;
+    // baoguo_pic.face_detection()?;
+    // baoguo_pic.show("Baoguo")?;
+    // baoguo_pic.save_as_img("for_readme").unwrap();
 
-    // Use Video as Stream
-    let mut video_stream = resources::Stream::from_video("328_1687706104.mp4");
-    video_stream.moving_object_detection(3, 20, 30, false, "moving_video.mp4")?;
+    let mut qr_pic = resources::Frame::get_from_img("8c0aa0e220417fb1011dd4ae28388345.jpg")?;
+    let urls = qr_pic.qrcode_detection()?;
+    println!("urls : {:#?}",urls);
+    qr_pic.show("window_name")?;
+    
+
+    // // Use Video as Stream
+    // let mut video_stream = resources::Stream::from_video("328_1687706104.mp4");
+    // video_stream.moving_object_detection(3, 20, 30, false, "moving_video.mp4")?;
 
     // // Use Camera as Stream
     // let mut my_camera = resources::Stream::from_camera();
