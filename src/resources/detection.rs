@@ -1,12 +1,11 @@
 use opencv::{
-    core::{absdiff, Point, Mat, Vector, Scalar, Size, CV_8UC1, BORDER_CONSTANT},
-    prelude::{MatTraitConst, CascadeClassifierTrait, HOGDescriptorTraitConst, HOGDescriptorTrait},
+    core::{absdiff, Point, Mat, Vector, Scalar, Size, CV_8UC1, BORDER_CONSTANT, Rect},
+    prelude::{MatTraitConst, CascadeClassifierTrait, HOGDescriptorTraitConst, HOGDescriptorTrait, QRCodeDetectorTrait},
     imgproc::{threshold, erode, get_structuring_element, MORPH_RECT, dilate, find_contours, bounding_rect, approx_poly_dp,LINE_8, THRESH_BINARY, rectangle, cvt_color, RETR_EXTERNAL, COLOR_RGB2GRAY, CHAIN_APPROX_SIMPLE},
-    objdetect::{CascadeClassifier, HOGDescriptor},
+    objdetect::{CascadeClassifier, HOGDescriptor, QRCodeDetector},
     types::VectorOfPoint,
 };
 use super::{FrameDetection, Frame};
-
 
 impl FrameDetection for Frame{
     fn body_detection(&mut self) -> Result<(), opencv::Error>{
@@ -66,4 +65,23 @@ impl FrameDetection for Frame{
         Ok(frame_result)
     }
 
+    fn qrcode_detection(&mut self) -> Result<String,opencv::Error> {
+        let mut qr_detector = QRCodeDetector::default()?;
+
+        // 识别二维码
+        let mut points = opencv::types::VectorOfPoint::new();
+        let data: Vec<u8> = qr_detector.detect_and_decode(self, &mut points, &mut Mat::default())?;
+        let url = String::from_utf8(data).unwrap();
+
+        let rect = Rect::from_points(points.get(0)? , points.get(2)?);
+        rectangle(
+            self,
+            rect,
+            Scalar::new(0.0, 255.0, 0.0, 0.0),
+            2,
+            8,
+            0,
+        )?;
+        Ok(url)
+    }
 }
