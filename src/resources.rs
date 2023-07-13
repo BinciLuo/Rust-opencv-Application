@@ -91,19 +91,33 @@ impl Stream{
         }
     }
 
+    /// # Body Detection
+    /// ## Detect Bodys
+    /// ## Arguements 
+    /// ### show
+    /// - type: bool
+    /// - description: whether to create a GUI window
+    /// ### output_path
+    /// - type: &str
+    /// - description: save path, if you don't want to save, set it to ""
+    /// ## Example usage
+    /// `stream.body_detection(true, "")?;`
     pub fn body_detection(&mut self, show: bool, mut output_path: &str)->Result<(),opencv::Error>{
         // Get Stream Info
         let stream_width = self.stream_frames.get(opencv::videoio::CAP_PROP_FRAME_WIDTH)?;
         let stream_height = self.stream_frames.get(opencv::videoio::CAP_PROP_FRAME_HEIGHT)?;
         let fps = self.stream_frames.get(opencv::videoio::CAP_PROP_FPS)?;
         let frame_size = Size::new(stream_width as i32, stream_height as i32);
+        let mut save_video = true;
+        
 
         // Some Init
         if output_path == ""{
             set_folder("temp");
+            save_video = false;
             output_path = "temp/temp_video.mp4";
         }
-        let fourcc = VideoWriter::fourcc('m' as i8, 'p' as i8, '4' as i8, 'v' as i8).unwrap();
+        let fourcc = VideoWriter::fourcc('m', 'p', '4', 'v').unwrap();
         let mut video_writer = VideoWriter::new(output_path, fourcc, fps, frame_size, true).unwrap();
 
         // Process
@@ -117,7 +131,9 @@ impl Stream{
                     break;
                 }
                 frame.body_detection()?;
-                video_writer.write(&frame).unwrap();
+                if save_video{
+                    video_writer.write(&frame).unwrap();
+                }
             }
 
             if show{
@@ -145,19 +161,31 @@ impl Stream{
         Ok(())
     }
 
+    /// # Face Detection
+    /// ## Detect faces
+    /// ## Arguements 
+    /// ### show
+    /// - type: bool
+    /// - description: whether to create a GUI window
+    /// ### output_path
+    /// - type: &str
+    /// - description: save path, if you don't want to save, set it to ""
+    /// ## Example usage
+    /// `stream.face_detection(true, "")?;`
     pub fn face_detection(&mut self, show: bool, mut output_path: &str)->Result<(),opencv::Error>{
         // Get Stream Info
         let stream_width = self.stream_frames.get(opencv::videoio::CAP_PROP_FRAME_WIDTH)?;
         let stream_height = self.stream_frames.get(opencv::videoio::CAP_PROP_FRAME_HEIGHT)?;
         let fps = self.stream_frames.get(opencv::videoio::CAP_PROP_FPS)?;
         let frame_size = Size::new(stream_width as i32, stream_height as i32);
-
+        let mut save_video = true;
         // Some Init
         if output_path == ""{
             set_folder("temp");
+            save_video = false;
             output_path = "temp/temp_video.mp4";
         }
-        let fourcc = VideoWriter::fourcc('m' as i8, 'p' as i8, '4' as i8, 'v' as i8).unwrap();
+        let fourcc = VideoWriter::fourcc('m', 'p', '4', 'v').unwrap();
         let mut video_writer = VideoWriter::new(output_path, fourcc, fps, frame_size, true).unwrap();
 
         highgui::named_window("Face Detection Tips:Press[(p, Take picture), (s, Save), (q, quit)]", highgui::WINDOW_FULLSCREEN)?;
@@ -170,7 +198,9 @@ impl Stream{
                     break;
                 }
                 frame.face_detection()?;
-                video_writer.write(&frame).unwrap();
+                if save_video{
+                    video_writer.write(&frame).unwrap();
+                }    
             }
             if show{
                 highgui::imshow("Face Detection Tips:Press[(p, Take picture), (s, Save), (q, quit)]", &frame)?;
@@ -199,19 +229,42 @@ impl Stream{
         Ok(())
     }
 
-    pub fn moving_object_detection(&mut self,mini: i32,max: i32, show_fps: i32, show: bool, mut output_path: &str)->Result<(),opencv::Error>{
+    /// # Moving Object Detection
+    /// ## Detect moving object from stream
+    /// ## Arguements 
+    /// ### mini
+    /// - type: i32
+    /// - description: for erode
+    /// ### max
+    /// - type: i32
+    /// - description: for dilate
+    /// ### show_fps
+    /// - type: i32
+    /// - description: how many frames per seconds(set 0 to ignore)
+    /// 
+    /// ### show
+    /// - type: bool
+    /// - description: whether to create a GUI window
+    /// ### output_path
+    /// - type: &str
+    /// - description: save path, if you don't want to save, set it to ""
+    /// ## Example usage
+    /// `stream.moving_object_detection(6, 60, 60, true, "")?;`
+    pub fn moving_object_detection(&mut self, mini: i32, max: i32, show_fps: i32, show: bool, mut output_path: &str)->Result<(),opencv::Error>{
         // Get Stream Info
         let stream_width = self.stream_frames.get(opencv::videoio::CAP_PROP_FRAME_WIDTH)?;
         let stream_height = self.stream_frames.get(opencv::videoio::CAP_PROP_FRAME_HEIGHT)?;
         let fps = self.stream_frames.get(opencv::videoio::CAP_PROP_FPS)?;
         let frame_size = Size::new(stream_width as i32, stream_height as i32);
+        let mut save_video = true;
 
         // Some Init
         if output_path == ""{
             set_folder("temp");
+            save_video = false;
             output_path = "temp/temp_video.mp4";
         }
-        let fourcc = VideoWriter::fourcc('m' as i8, 'p' as i8, '4' as i8, 'v' as i8).unwrap();
+        let fourcc = VideoWriter::fourcc('m', 'p', '4', 'v').unwrap();
         let mut video_writer = VideoWriter::new(output_path, fourcc, fps, frame_size, true).unwrap();
 
         //init
@@ -232,8 +285,9 @@ impl Stream{
                     break;
                 }
                 frame_show=Frame::moving_object_detection(&mut frame_prev,&mut frame_next, mini, max)?;
-                
-                video_writer.write(&frame_show).unwrap();
+                if save_video{
+                    video_writer.write(&frame_show).unwrap();
+                }
             }
 
             if show{
@@ -264,7 +318,6 @@ impl Stream{
         highgui::destroy_all_windows()?;
         Ok(())
     }
-
 }
 
 impl Stream{

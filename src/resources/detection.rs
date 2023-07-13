@@ -1,6 +1,6 @@
 use opencv::{
     core::{absdiff, Point, Mat, Vector, Scalar, Size, CV_8UC1, BORDER_CONSTANT, Rect},
-    prelude::{MatTraitConst, CascadeClassifierTrait, HOGDescriptorTraitConst, HOGDescriptorTrait, QRCodeDetectorTrait},
+    prelude::{MatTraitConst, CascadeClassifierTrait, HOGDescriptorTraitConst, HOGDescriptorTrait, GraphicalCodeDetectorTraitConst},
     imgproc::{threshold, erode, get_structuring_element, MORPH_RECT, dilate, find_contours, bounding_rect, approx_poly_dp,LINE_8, THRESH_BINARY, rectangle, cvt_color, RETR_EXTERNAL, COLOR_RGB2GRAY, CHAIN_APPROX_SIMPLE},
     objdetect::{CascadeClassifier, HOGDescriptor, QRCodeDetector},
     types::VectorOfPoint,
@@ -66,7 +66,7 @@ impl FrameDetection for Frame{
     }
 
     fn qrcode_detection(&mut self) -> Result<String,opencv::Error> {
-        let mut qr_detector = QRCodeDetector::default()?;
+        let qr_detector = QRCodeDetector::default()?;
 
         // 识别二维码
         let mut points = opencv::types::VectorOfPoint::new();

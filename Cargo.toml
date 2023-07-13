@@ -8,5 +8,5 @@ edition = "2021"
 [dependencies]
 reqwest = { version = "0.11.11", features = ["json", "cookies"] }
 tokio = { version = "1", features = ["full"] }
-opencv = "0.63.0" # or whatever version is the latest
+opencv = "0.83.0" # or whatever version is the latest
 chrono = "0.4"
