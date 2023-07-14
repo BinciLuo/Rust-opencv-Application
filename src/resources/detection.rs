@@ -8,6 +8,10 @@ use opencv::{
 use super::{FrameDetection, Frame};
 
 impl FrameDetection for Frame{
+    /// # Body Detection
+    /// ## Detect bodies in a frame
+    /// ## Example usage
+    /// `frame.body_detection()?;`
     fn body_detection(&mut self) -> Result<(), opencv::Error>{
         let mut hog = HOGDescriptor::default()?;
         hog.set_svm_detector(&HOGDescriptor::get_default_people_detector()?)?;
@@ -19,6 +23,10 @@ impl FrameDetection for Frame{
         Ok(())
     }
 
+    /// # Face Detection
+    /// ## Detect faces in a frame
+    /// ## Example usage
+    /// `frame.face_detection()?;`
     fn face_detection(&mut self) -> Result<(), opencv::Error>{
         let mut classifier = CascadeClassifier::default()?;
         classifier.load("haarcascade_frontalface_alt2.xml")?;
@@ -33,6 +41,23 @@ impl FrameDetection for Frame{
         Ok(())
     }
 
+    /// # Moving object detection
+    /// ## Detect moving objects
+    /// ## Arguements
+    /// ### frame_prev
+    /// - type: &mut Frame
+    /// - description: previous frame
+    /// ### frame_next
+    /// - type: &mut Frame
+    /// - description: next frame
+    /// ### mini
+    /// - type: i32
+    /// - description: for erode
+    /// ### max
+    /// - type: i32
+    /// - description: for dilate
+    /// ## Example usage
+    /// `frame_show = Frame::moving_object_detection(&mut frame_prev,&mut frame_next, 6, 30)?;`
     fn moving_object_detection(frame_prev:&mut Self, frame_next:&mut Self, mini: i32, max: i32) -> Result<Mat, opencv::Error>{
         let mut gray_prev = Mat::new_rows_cols_with_default(frame_prev.rows(), frame_prev.cols(), CV_8UC1, Scalar::default())?;
         let mut gray_next = Mat::new_rows_cols_with_default(frame_next.rows(), frame_next.cols(), CV_8UC1, Scalar::default())?;
@@ -65,6 +90,10 @@ impl FrameDetection for Frame{
         Ok(frame_result)
     }
 
+    /// # QRcode Detection
+    /// ## Detect QR code
+    /// ## Example usage
+    /// `let urls = qr_pic.qrcode_detection()?;`
     fn qrcode_detection(&mut self) -> Result<String,opencv::Error> {
         let qr_detector = QRCodeDetector::default()?;
 
