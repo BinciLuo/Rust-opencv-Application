@@ -34,8 +34,8 @@ Linux:
 10. `sudo echo 'export PKG_CONFIG_PATH' >> /etc/bash.bashrc`
 ## Usage
 - Clone this repository 
-`git clone https://github.com/BinciLuo/RustWebCam.git` 
-`cd RustWebCam`
+`git clone https://github.com/BinciLuo/Rust-opencv-Application.git` 
+`cd Rust-opencv-Application`
 - Build 
 `cargo build`
 - Run 
@@ -99,8 +99,8 @@ Linux:
 10. `sudo echo 'export PKG_CONFIG_PATH' >> /etc/bash.bashrc`
 ## 使用方法
 - 克隆此存储库 
-`git clone https://github.com/BinciLuo/RustWebCam.git` 
-`cd RustWebCam`
+`git clone https://github.com/BinciLuo/Rust-opencv-Application.git` 
+`cd Rust-opencv-Application`
 - 构建 
 `cargo build`
 - 运行 
