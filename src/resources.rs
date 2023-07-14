@@ -21,6 +21,14 @@ pub struct Stream{
 }
 
 impl Stream{
+    /// # from Video
+    /// ## Get a stream from video
+    /// ## Arguements
+    /// ### path
+    /// - type: &str
+    /// - description: get a stream from video
+    /// ## Example usage
+    /// `let mut video_stream = resources::Stream::from_video("example.mp4");`
     pub fn from_video(path:&str) -> Self{
         Self{
                 stream_frames:videoio::VideoCapture::from_file(path,videoio::CAP_FFMPEG).unwrap(),
@@ -28,6 +36,10 @@ impl Stream{
             }
     }
 
+    /// # from Camera
+    /// ## Get a stream from camera
+    /// ## Example usage
+    /// `let mut camera_stream = resources::Stream::from_camera();`
     pub fn from_camera() -> Self{
         Self {
                 stream_frames: videoio::VideoCapture::new(0, videoio::CAP_ANY).unwrap(),
@@ -345,7 +357,33 @@ pub(crate) trait FrameDetection {
 }
 
 pub(crate) trait FrameTools {
+    /// # Save as IMG
+    /// ## Save a frame as image
+    /// ## Arguements
+    /// ### file_path
+    /// - type: &str
+    /// - description: path to save the image
+    /// ## Example usage
+    /// `frame.save_as_img("example.png")`
     fn save_as_img(&self, file_path: &str) -> Result<(), opencv::Error>;
+
+    /// # Show
+    /// ## Show a frame
+    /// ## Arguements
+    /// ### window_name
+    /// - type: &str
+    /// - description: name of window
+    /// ## Example usage
+    /// ### 
     fn show(&self,window_name: &str) -> Result<(),opencv::Error>;
+
+    /// # Get from IMG
+    /// ## Get a frame from image
+    /// ## Arguements
+    /// ### file_path
+    /// - type: &str
+    /// - description: path to read image
+    /// ## Example usage
+    /// `let mut pic_frame = resources::Frame::get_from_img("example.jpeg")?;`
     fn get_from_img(file_path: &str) -> Result<Frame, opencv::Error>;
 }

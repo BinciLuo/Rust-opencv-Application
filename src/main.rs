@@ -25,7 +25,7 @@ fn main() ->Result<(),opencv::Error>{
 
     // Use Video as Stream
     let mut video_stream = resources::Stream::from_video("328_1687706104.mp4");
-    video_stream.moving_object_detection(3, 20, 30, false, "moving_video.mp4")?;
+    video_stream.moving_object_detection(3, 20, 30, false, "")?;
 
     // Use Camera as Stream
     let mut my_camera = resources::Stream::from_camera();
