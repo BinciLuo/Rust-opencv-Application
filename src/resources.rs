@@ -21,6 +21,14 @@ pub struct Stream{
 }
 
 impl Stream{
+    /// # from Video
+    /// ## Get a stream from video
+    /// ## Arguements
+    /// ### path
+    /// - type: &str
+    /// - description: get a stream from video
+    /// ## Example usage
+    /// `let mut video_stream = resources::Stream::from_video("example.mp4");`
     pub fn from_video(path:&str) -> Self{
         Self{
                 stream_frames:videoio::VideoCapture::from_file(path,videoio::CAP_FFMPEG).unwrap(),
@@ -28,6 +36,10 @@ impl Stream{
             }
     }
 
+    /// # from Camera
+    /// ## Get a stream from camera
+    /// ## Example usage
+    /// `let mut camera_stream = resources::Stream::from_camera();`
     pub fn from_camera() -> Self{
         Self {
                 stream_frames: videoio::VideoCapture::new(0, videoio::CAP_ANY).unwrap(),
@@ -91,19 +103,33 @@ impl Stream{
         }
     }
 
+    /// # Body Detection
+    /// ## Detect Bodys
+    /// ## Arguements 
+    /// ### show
+    /// - type: bool
+    /// - description: whether to create a GUI window
+    /// ### output_path
+    /// - type: &str
+    /// - description: save path, if you don't want to save, set it to ""
+    /// ## Example usage
+    /// `stream.body_detection(true, "")?;`
     pub fn body_detection(&mut self, show: bool, mut output_path: &str)->Result<(),opencv::Error>{
         // Get Stream Info
         let stream_width = self.stream_frames.get(opencv::videoio::CAP_PROP_FRAME_WIDTH)?;
         let stream_height = self.stream_frames.get(opencv::videoio::CAP_PROP_FRAME_HEIGHT)?;
         let fps = self.stream_frames.get(opencv::videoio::CAP_PROP_FPS)?;
         let frame_size = Size::new(stream_width as i32, stream_height as i32);
+        let mut save_video = true;
+        
 
         // Some Init
         if output_path == ""{
             set_folder("temp");
+            save_video = false;
             output_path = "temp/temp_video.mp4";
         }
-        let fourcc = VideoWriter::fourcc('m' as i8, 'p' as i8, '4' as i8, 'v' as i8).unwrap();
+        let fourcc = VideoWriter::fourcc('m', 'p', '4', 'v').unwrap();
         let mut video_writer = VideoWriter::new(output_path, fourcc, fps, frame_size, true).unwrap();
 
         // Process
@@ -117,7 +143,9 @@ impl Stream{
                     break;
                 }
                 frame.body_detection()?;
-                video_writer.write(&frame).unwrap();
+                if save_video{
+                    video_writer.write(&frame).unwrap();
+                }
             }
 
             if show{
@@ -145,19 +173,31 @@ impl Stream{
         Ok(())
     }
 
+    /// # Face Detection
+    /// ## Detect faces
+    /// ## Arguements 
+    /// ### show
+    /// - type: bool
+    /// - description: whether to create a GUI window
+    /// ### output_path
+    /// - type: &str
+    /// - description: save path, if you don't want to save, set it to ""
+    /// ## Example usage
+    /// `stream.face_detection(true, "")?;`
     pub fn face_detection(&mut self, show: bool, mut output_path: &str)->Result<(),opencv::Error>{
         // Get Stream Info
         let stream_width = self.stream_frames.get(opencv::videoio::CAP_PROP_FRAME_WIDTH)?;
         let stream_height = self.stream_frames.get(opencv::videoio::CAP_PROP_FRAME_HEIGHT)?;
         let fps = self.stream_frames.get(opencv::videoio::CAP_PROP_FPS)?;
         let frame_size = Size::new(stream_width as i32, stream_height as i32);
-
+        let mut save_video = true;
         // Some Init
         if output_path == ""{
             set_folder("temp");
+            save_video = false;
             output_path = "temp/temp_video.mp4";
         }
-        let fourcc = VideoWriter::fourcc('m' as i8, 'p' as i8, '4' as i8, 'v' as i8).unwrap();
+        let fourcc = VideoWriter::fourcc('m', 'p', '4', 'v').unwrap();
         let mut video_writer = VideoWriter::new(output_path, fourcc, fps, frame_size, true).unwrap();
 
         highgui::named_window("Face Detection Tips:Press[(p, Take picture), (s, Save), (q, quit)]", highgui::WINDOW_FULLSCREEN)?;
@@ -170,7 +210,9 @@ impl Stream{
                     break;
                 }
                 frame.face_detection()?;
-                video_writer.write(&frame).unwrap();
+                if save_video{
+                    video_writer.write(&frame).unwrap();
+                }    
             }
             if show{
                 highgui::imshow("Face Detection Tips:Press[(p, Take picture), (s, Save), (q, quit)]", &frame)?;
@@ -199,19 +241,42 @@ impl Stream{
         Ok(())
     }
 
-    pub fn moving_object_detection(&mut self,mini: i32,max: i32, show_fps: i32, show: bool, mut output_path: &str)->Result<(),opencv::Error>{
+    /// # Moving Object Detection
+    /// ## Detect moving object from stream
+    /// ## Arguements 
+    /// ### mini
+    /// - type: i32
+    /// - description: for erode
+    /// ### max
+    /// - type: i32
+    /// - description: for dilate
+    /// ### show_fps
+    /// - type: i32
+    /// - description: how many frames per seconds(set 0 to ignore)
+    /// 
+    /// ### show
+    /// - type: bool
+    /// - description: whether to create a GUI window
+    /// ### output_path
+    /// - type: &str
+    /// - description: save path, if you don't want to save, set it to ""
+    /// ## Example usage
+    /// `stream.moving_object_detection(6, 60, 60, true, "")?;`
+    pub fn moving_object_detection(&mut self, mini: i32, max: i32, show_fps: i32, show: bool, mut output_path: &str)->Result<(),opencv::Error>{
         // Get Stream Info
         let stream_width = self.stream_frames.get(opencv::videoio::CAP_PROP_FRAME_WIDTH)?;
         let stream_height = self.stream_frames.get(opencv::videoio::CAP_PROP_FRAME_HEIGHT)?;
         let fps = self.stream_frames.get(opencv::videoio::CAP_PROP_FPS)?;
         let frame_size = Size::new(stream_width as i32, stream_height as i32);
+        let mut save_video = true;
 
         // Some Init
         if output_path == ""{
             set_folder("temp");
+            save_video = false;
             output_path = "temp/temp_video.mp4";
         }
-        let fourcc = VideoWriter::fourcc('m' as i8, 'p' as i8, '4' as i8, 'v' as i8).unwrap();
+        let fourcc = VideoWriter::fourcc('m', 'p', '4', 'v').unwrap();
         let mut video_writer = VideoWriter::new(output_path, fourcc, fps, frame_size, true).unwrap();
 
         //init
@@ -232,8 +297,9 @@ impl Stream{
                     break;
                 }
                 frame_show=Frame::moving_object_detection(&mut frame_prev,&mut frame_next, mini, max)?;
-                
-                video_writer.write(&frame_show).unwrap();
+                if save_video{
+                    video_writer.write(&frame_show).unwrap();
+                }
             }
 
             if show{
@@ -264,7 +330,6 @@ impl Stream{
         highgui::destroy_all_windows()?;
         Ok(())
     }
-
 }
 
 impl Stream{
@@ -292,7 +357,33 @@ pub(crate) trait FrameDetection {
 }
 
 pub(crate) trait FrameTools {
+    /// # Save as IMG
+    /// ## Save a frame as image
+    /// ## Arguements
+    /// ### file_path
+    /// - type: &str
+    /// - description: path to save the image
+    /// ## Example usage
+    /// `frame.save_as_img("example.png")`
     fn save_as_img(&self, file_path: &str) -> Result<(), opencv::Error>;
+
+    /// # Show
+    /// ## Show a frame
+    /// ## Arguements
+    /// ### window_name
+    /// - type: &str
+    /// - description: name of window
+    /// ## Example usage
+    /// ### 
     fn show(&self,window_name: &str) -> Result<(),opencv::Error>;
+
+    /// # Get from IMG
+    /// ## Get a frame from image
+    /// ## Arguements
+    /// ### file_path
+    /// - type: &str
+    /// - description: path to read image
+    /// ## Example usage
+    /// `let mut pic_frame = resources::Frame::get_from_img("example.jpeg")?;`
     fn get_from_img(file_path: &str) -> Result<Frame, opencv::Error>;
 }
